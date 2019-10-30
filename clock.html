@@ -1,0 +1,223 @@
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<style>
+		body {
+			background-color: #29283e;
+			color: #a6a6ce;
+			font-family: sans-serif;
+		}
+		
+		.second {
+		  position: absolute;
+		  width: 0;
+		  height: 0;
+		  transform: rotate(var(--a, 0deg)) translate(20em);
+		  text-align: center;
+		}		
+		.seconds {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+		}		
+		
+		.minute {
+		  position: absolute;
+		  width: 0;
+		  height: 0;
+		  transform: rotate(var(--a, 0deg)) translate(16em);
+		  text-align: center;
+		}		
+		.minutes {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+		}
+		
+		.hour {
+		  position: absolute;
+		  width: 0;
+		  height: 0;
+		  transform: rotate(var(--a, 0deg)) translate(12em);
+		  text-align: center;
+		}		
+		.hours {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+		}		
+		
+		.day {
+		  position: absolute;
+		  width: 0;
+		  height: 0;
+		  transform: rotate(var(--a, 0deg)) translate(8em);
+		  text-align: center;
+		}		
+		.days {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+		}	
+		
+		.month {
+		  position: absolute;
+		  width: 0;
+		  height: 0;
+		  transform: rotate(var(--a, 0deg)) translate(2.5em);
+		  text-align: center;
+		}			
+		.hight-light {
+		  color: red;
+		}
+		.item {
+			transition: 0.2s 0.2s ease-in;
+		}
+		
+		.months {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+		}
+		
+		.label {    
+			position: absolute;
+			top: 50vh;
+			left: 50vw;
+			color: red;
+		}
+		
+	</style>
+</head>
+<body>
+	<div class="time-container">
+		<span class="label year"style="transform: translate(-1.5em, -1em)"></span>
+		<span class="label" style="transform: translate(21.5em)">giây</span>
+		<div class="seconds">
+		</div>
+		<span class="label" style="transform: translate(17.5em)">phút</span>
+		<div class="minutes">
+		</div>
+		<span class="label" style="transform: translate(13.5em)">giờ</span>
+		<div class="hours">
+		</div>
+		<span class="label" style="transform: translate(5.5em)">ngày</span>
+		<div class="days">
+		</div>
+		<div class="months">
+		</div>
+	<div>
+</body>
+<script>
+	var secondDeg = 0, minuteDeg, hourDeg=0, dayDeg=0, month=0;
+	var dayOfWeek = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
+	$(document).ready(function() {
+		rotateClock(true);
+		drawTime()
+		var isFirstTime = true;
+		setInterval(function() {
+			rotateClock(isFirstTime);
+			if(isFirstTime) {		
+				isFirstTime = false;
+				$('.seconds').css('transition', '0.2s 0.2s ease-in');
+				$('.minutes').css('transition', '0.2s 0.2s ease-in');
+				$('.hours').css('transition', '0.2s 0.2s ease-in');
+				$('.days').css('transition', '0.2s 0.2s ease-in');
+				$('.month').css('transition', '0.2s 0.2s ease-in');
+			}
+		}, 1000);
+	})
+	
+	function drawTime() {	
+		var seconds = '';
+		for(var i = 0; i< 60; i++) {
+			seconds+= '<div class="item second" style="--a:'+ (i * 6)  +'deg" id="second-'+pad(i,2)+'">'+ pad(i,2) +'</div>';
+		}
+		$('.seconds').html(seconds);		
+		
+		var minutes = '';
+		for(var i = 0; i< 60; i++) {
+			minutes+= '<div class="item minute" style="--a:'+ (i*6 ) +'deg" id="minute-'+pad(i,2)+'">'+ pad(i,2) +'</div>';
+		}
+		$('.minutes').html(minutes);		
+		
+		var hours = '';
+		for(var i = 0; i< 24; i++) {
+			hours+= '<div class="item hour" style="--a:'+ (i*15) +'deg" id="hour-'+pad(i,2)+'">'+ pad(i,2) +'</div>';
+		}
+		$('.hours').html(hours);
+		
+		var days = '';
+		var dayOfMonth = daysInMonth()
+		for(var i = 0; i< dayOfMonth; i++) {
+			days+= '<div class="item day" style="--a:'+ i*(360/dayOfMonth) +'deg" id="day-'+pad(i+1,2)+'">'+ pad(i+1,2) +'</div>';
+		}
+		$('.days').html(days);
+		
+		var months = '';
+		for(var i = 0; i< 12; i++) {
+			months+= '<div class="item month" style="--a:'+ (i * 30) +'deg" id="month-'+pad(i+1,2)+'">Th'+ pad(i+1,2) +'</div>';
+		}
+		$('.months').html(months);
+	}
+	
+	function rotateClock(isFirstTime) {		
+		var d = new Date();
+		var currentSecond = d.getSeconds();
+		var currentMinute = d.getMinutes();
+		var currentHour = d.getHours();
+		var currentDay = d.getDate();
+		var currentMonth = d.getMonth() + 1;
+		var dayOfMonth = daysInMonth();
+		
+		
+		$('.seconds').css('transform', 'rotate('+ (-(currentSecond) * 6) + 'deg)');
+		$('.seconds .hight-light').removeClass('hight-light');
+		$('#second-'+pad(currentSecond,2)).addClass('hight-light');		
+		
+		$('.minutes').css('transform', 'rotate('+ (-(currentMinute) * 6) + 'deg)');
+		if(currentSecond === 0 || isFirstTime) {
+			$('.minutes .hight-light').removeClass('hight-light');
+			$('#minute-'+pad(currentMinute,2)).addClass('hight-light');
+		}
+		
+		$('.hours').css('transform', 'rotate('+ (-(currentHour) * 15) + 'deg)');
+		if(currentMinute === 0 || isFirstTime) {
+			$('.hours .hight-light').removeClass('hight-light');
+			$('#hour-'+pad(currentHour,2)).addClass('hight-light');
+		}
+		
+		$('.days').css('transform', 'rotate('+ (-(currentDay-1) * (360/dayOfMonth)) + 'deg)');
+		if(currentHour === 0 || isFirstTime) {
+			$('.days .hight-light').removeClass('hight-light');
+			$('#day-'+pad(currentDay,2)).addClass('hight-light');
+		}
+		
+		$('.months').css('transform', 'rotate('+ (-(currentMonth-1) * 30) + 'deg)');
+		if(currentDay === 1 || isFirstTime) {
+			$('.months .hight-light').removeClass('hight-light');
+			$('#month-'+pad(currentMonth,2)).addClass('hight-light');
+		}
+		
+		
+		$('.year').html(dayOfWeek[d.getDay()] +'<br/>'+ d.getFullYear());
+		
+	}
+	
+	function daysInMonth () {
+		var d = new Date();
+		var month = d.getMonth() + 1;
+		var year = d.getYear();
+		return new Date(year, month, 0).getDate();
+	}
+	
+	function pad(number, length) {
+		var my_string = '' + number;
+		while (my_string.length < length) {
+			my_string = '0' + my_string;
+		}
+
+		return my_string;
+	}
+	
+  
+</script>
